@@ -1,0 +1,48 @@
+{% raw %}
+<div class="container">
+  <div class="card mx-auto my-5" id="login-panel">
+    <div class="card-header text-center">Sign in</div>
+
+    <div class="card-block">
+      <div v-show="authError" class="alert alert-danger">
+        <strong>Error:</strong> {{ authError }}
+      </div>
+
+      <form @submit.prevent="onSubmit">
+        <div class="form-group row" :class="{ 'has-danger': errors.has('user-id') }">
+          <label class="col-sm-2 col-form-label">User&nbsp;Id</label>
+          <div class="col-sm-9 offset-sm-1">
+            <input type="text" class="form-control" name="user-id"
+              :class="{ 'form-control-danger': errors.has('user-id') }"
+              v-model="userId" v-validate="'required|alpha_num'" data-vv-as="user id">
+          </div>
+          <div v-show="errors.has('user-id')" class="form-control-feedback col-sm-10 offset-sm-3">
+            {{ errors.first('user-id') }}
+          </div>
+        </div>
+
+        <div class="form-group row" :class="{ 'has-danger': errors.has('password') }">
+          <label class="col-sm-2 col-form-label">Password</label>
+          <div class="col-sm-9 offset-sm-1">
+            <input type="password" class="form-control" name="password"
+              :class="{ 'form-control-danger': errors.has('password') }"
+              v-model="password" v-validate="'required'">
+          </div>
+          <div v-show="errors.has('password')" class="form-control-feedback col-sm-10 offset-sm-3">
+            {{ errors.first('password') }}
+          </div>
+        </div>
+
+        <div class="form-group row text-right">
+          <div class="col">
+            <button type="submit" class="btn btn-primary" :disabled="submitting">
+              <p-loading-icon v-show="submitting"></p-loading-icon>
+              <span v-show="!submitting">Sign in</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endraw %}

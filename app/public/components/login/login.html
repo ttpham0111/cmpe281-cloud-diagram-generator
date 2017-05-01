@@ -1,0 +1,47 @@
+<script type="x-template" id="login">
+  {% include 'components/login/login.template.html' %}
+</script>
+
+<script>
+  Vue.component('p-login', {
+    template: "#login",
+
+    data: function() {
+      return {
+        userId: '',
+        password: '',
+        authError: '',
+
+        submitting: false
+      };
+    },
+
+    methods: {
+      onSubmit: function() {
+        if (this.submitting) return;
+
+        var self = this;
+        this.$validator.validateAll().then(function() {
+          self.submitting = true;
+          self.login(self.userId, self.password).always(function() {
+            self.submitting = false;
+          });
+        }).catch();
+      },
+
+      login: function(userId, password) {
+        var self = this;
+
+        return AuthService.login(userId, password,
+          function() {
+            self.$router.push('home');
+          },
+
+          function(data) {
+            self.authError = data.responseJSON.error || 'Something went wrong, please try again later';
+          }
+        );
+      }
+    }    
+  });
+</script>

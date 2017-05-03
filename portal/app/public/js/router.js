@@ -26,7 +26,17 @@ router = new VueRouter({
     {
       path: '/home',
       component: Vue.component('p-home'),
-      beforeEnter: checkAuth
+      beforeEnter: checkAuth,
+      children: [
+        {
+          path: '',
+          component: Vue.component('p-code-form')
+        },
+        {
+          path: '/grade',
+          component: Vue.component('p-grade')
+        }
+      ]
     },
   ]
 });

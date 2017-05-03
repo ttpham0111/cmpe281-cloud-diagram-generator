@@ -27,5 +27,5 @@ RUN pip install /app
 CMD gunicorn --bind=0.0.0.0:5000 \
              --access-logfile=- \
              --access-logformat="%(t)s %(r)s %(s)s" \
-             --workers=4 \
+             --workers=1 \
              run_server:app

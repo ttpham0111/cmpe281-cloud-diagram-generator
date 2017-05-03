@@ -1,0 +1,87 @@
+<script type="x-template" id="grade">
+  {% include 'components/grade/grade.template.html' %}
+</script>
+
+<script>
+  Vue.component('p-grade', {
+    template: "#grade",
+
+    data: function() {
+      return {
+        fields: {
+          test: {
+            name: 'test', value: 'value', type: 'Number'
+          }
+        },
+
+        showAddFieldForm: false,
+        showSuccessMessage: false,
+        submitting: false
+      };
+    },
+
+    computed: {
+      hasFields: function() {
+        var fields = this.fields;
+        for (var fieldName in fields) {
+          if (fields.hasOwnProperty(fieldName)) return true;
+        }
+
+        return false;
+      }
+    },
+
+    methods: {
+      toggleAddFieldForm: function() {
+        var inv = !this.showAddFieldForm;
+        this.showAddFieldForm = inv;
+
+        var self = this;
+        if (inv && !self.tether) {
+          setTimeout(function() {
+            self.tether = new Tether({
+              element: self.$refs.addFieldForm,
+              target: self.$refs.addFieldBtn,
+              attachment: 'top center',
+              targetAttachment: 'bottom center',
+              targetOffset: '10px 0'
+            });
+          }, 1);
+        }
+      },
+
+      addField: function(fieldName, dataType) {
+        this.showAddFieldForm = false;
+
+        var fields = this.fields;
+        var field = fields[fieldName] || {};
+ 
+        field.name = fieldName;
+        field.type = dataType;
+        field.value = '';
+
+        if (!fields.hasOwnProperty(fieldName)) {
+          this.$set(fields, fieldName, field);
+        }
+      },
+
+      removeField: function(fieldName) {
+        this.$delete(this.fields, fieldName);
+      },
+
+      onSubmit: function() {
+        var self = this;
+
+        this.submitting = true;
+        setTimeout(function() {
+          self.submitting = false;
+          self.showSuccessMessage = true;
+
+          setTimeout(function() {
+            self.$router.push('home');
+          }, 3000);
+        }, 1000);
+      }
+    }
+  });
+</script>

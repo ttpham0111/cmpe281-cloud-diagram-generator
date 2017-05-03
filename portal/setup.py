@@ -1,4 +1,10 @@
+import os
+
 from setuptools import setup, find_packages
+
+here = os.path.dirname(os.path.realpath(__file__))
+with open(os.path.join(here, 'requirements.txt')) as f:
+    requires = f.read().strip().split()
 
 setup(
     name='app',
@@ -13,10 +19,7 @@ setup(
 
     py_modules=['run_server'],
 
-    install_requires=[
-        'flask==0.12',
-        'bcrypt==3.1.3'
-    ],
+    install_requires=requires,
 
     entry_points={
         'console_scripts': [

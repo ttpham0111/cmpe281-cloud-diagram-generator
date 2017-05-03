@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap v4 -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    <!-- jQuery -->
+    <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <!-- Tether -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Highlight JS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/monokai-sublime.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
+
+    <!-- Lightbox -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.9.0/css/lightbox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.9.0/js/lightbox.min.js"></script>
+
+    <!-- VueJS -->
+    <script src="//unpkg.com/vue@2.3.0/dist/vue.js"></script>
+    <script src="//unpkg.com/vue-router@2.5.2/dist/vue-router.js"></script>
+    <script src="//cdn.jsdelivr.net/vee-validate/2.0.0-rc.1/vee-validate.min.js"></script>
+
+    <!-- Directives -->
+    <script src="directives/highlight.js"></script>
+
+    <!-- Services -->
+    <script src="js/auth.js"></script>
+
+    <!-- Components -->
+    {% include 'components/loading-icon.html' %}
+
+    <link rel="stylesheet" href="components/login/login.css">
+    {% include 'components/login/login.html' %}
+
+    {% include 'components/grade/field-form/field-form.html' %}
+
+    {% include 'components/grade/grade-form/grade-form.html' %}
+
+    <link rel="stylesheet" href="components/grade/grade.css">
+    {% include 'components/grade/grade.html' %}
+
+    <link rel="stylesheet" href="components/code-form/code-form.css">
+    {% include 'components/code-form/code-form.html' %}
+
+    <link rel="stylesheet" href="components/home/home.css">
+    {% include 'components/home/home.html' %}
+
+    <!-- Router -->
+    <script src="js/router.js"></script>
+  </head>
+  
+  <body>
+    <div id="app">
+      <router-view></router-view>
+    </div>
+
+    <script>
+      Vue.use(VeeValidate);
+      
+      new Vue({
+        router: router
+      }).$mount('#app');
+    </script>
+  </body>
+</html>

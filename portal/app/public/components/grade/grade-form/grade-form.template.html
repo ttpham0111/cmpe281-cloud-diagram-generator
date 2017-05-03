@@ -1,0 +1,38 @@
+{% raw %}
+<form class="card card-outline-secondary mt-3" @submit.prevent="onSubmit">
+  <div class="card-block">
+    <div v-for="field in fields" :key="field.name" class="form-group row no-gutters"
+      :class="{ 'has-danger': errors.has(field.name) }">
+      <div class="col-4">
+        <label class="col-form-label">{{ field.name }}</label>
+      </div>
+
+      <div class="col-7">
+        <textarea v-if="showTextArea(field)" v-model="field.value" 
+          class="form-control" :placeholder="field.type"></textarea>
+        <input v-else type="text" class="form-control" :placeholder="field.type"
+          v-model="field.value">
+      </div>
+
+      <div class="col-1 col-form-label">
+        <button type="button" class="close" @click="removeField(field.name)">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div v-show="errors.has(field.name)" class="form-control-feedback col-8 offset-4">
+        {{ errors.first(field.name) }}
+      </div>
+    </div>
+
+    <div class="form-group row no-gutters">
+      <div class="col-8 offset-4">
+        <button type="submit" class="btn btn-primary" :disabled="submitting">
+          <p-loading-icon v-show="submitting"></p-loading-icon>
+          <span v-show="!submitting">Submit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endraw %}

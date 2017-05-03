@@ -1,0 +1,39 @@
+{% raw %}
+<div>
+  <div class="container">
+    <div class="row mb-3">
+      <a href="http://agilemodeling.com/images/models/sequenceDiagramTranscripts.jpg" data-lightbox="diagram">
+        <img
+          src="http://agilemodeling.com/images/models/sequenceDiagramTranscripts.jpg"
+          class="img-fluid img-thumbnail rounded mx-auto d-block">
+      </a>
+    </div>
+
+    <form>
+      <div class="row">
+        <h5 class="col">Grade</h5>
+        <span class="col text-right">
+          <a href @click.prevent="toggleAddFieldForm" ref="addFieldBtn">
+            + Add Field
+          </a>
+        </span>
+
+        <div id="add-field-form" ref="addFieldForm" v-show="showAddFieldForm" 
+          class="popover popover-bottom">
+          <h3 class="popover-title">New Field</h3>
+          <div class="popover-content">
+            <p-field-form @submit="addField"></p-field-form>
+          </div>
+        </div>
+      </div>
+  
+      <p-grade-form v-if="hasFields" @submit="onSubmit"
+        :fields="fields" :submitting="submitting" @remove-field="removeField"></p-grade-form>
+    
+      <div v-if="true" class="text-success mt-3">
+        > Successfully graded! Redirecting to submission page...
+      </div>
+    </form>
+  </div>
+</div>
+{% endraw %}

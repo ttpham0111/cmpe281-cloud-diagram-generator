@@ -37,5 +37,9 @@ var AuthService = {
 
   check: function() {
     return this.user.authenticated;
+  },
+
+  getUserId: function() {
+    return this.user.id;
   }
 };

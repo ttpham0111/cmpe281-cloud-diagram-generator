@@ -3,17 +3,19 @@ import os
 from flask import Flask, render_template
 from werkzeug.exceptions import NotFound
 
-# from app import db
-from app.api.api import api
+from app import Encoder
+from app.db.db_state import db_state
 
 # Initialize app
 app = Flask(__name__, static_folder='public', template_folder='public')
 app.secret_key = os.environ['SECRET_KEY']
+app.json_encoder = Encoder
 
 # Initialize DB
-# db.initialize(app, os.environ['DATABASE_URI'])
+db_state.initialize(app, os.environ['DATABASE_URI'])
 
 # Register API
+from app.api.api import api
 app.register_blueprint(api, url_prefix='/api')
 
 

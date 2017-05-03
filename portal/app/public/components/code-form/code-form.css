@@ -1,0 +1,12 @@
+#editor {
+  margin-top: 43px;
+  margin-bottom: 59px;
+}
+
+pre#code {
+  margin-bottom: 0;
+}
+#code > code {
+  height: 500px;
+  padding: 8px 12px;
+}

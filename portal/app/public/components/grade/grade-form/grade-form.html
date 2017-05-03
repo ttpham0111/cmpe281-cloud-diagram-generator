@@ -1,0 +1,69 @@
+<script type="x-template" id="grade-form">
+  {% include 'components/grade/grade-form/grade-form.template.html' %}
+</script>
+
+<script>
+  Vue.component('p-grade-form', {
+    template: "#grade-form",
+
+    props: {
+      fields: Object,
+      submitting: Boolean
+    },
+
+    created: function() {
+      this.attachValidations();
+    },
+
+    watch: {
+      fields: function() {
+        this.attachValidations();
+      }
+    },
+
+    methods: {
+      showTextArea: function(field) {
+        return field.type === 'Long Text';
+      },
+
+      attachValidations: function() {
+        var $validator = this.$validator;
+
+        var fields = this.fields;
+        for (var fieldName in fields) {
+          if (fields.hasOwnProperty(fieldName)) {
+            $validator.attach(fieldName, 'required');
+          }
+        }
+      },
+
+      getValidations: function() {
+        var fields = this.fields;
+        var validations = {};
+        for (var fieldName in fields) {
+          if (fields.hasOwnProperty(fieldName)) {
+            validations[fieldName] = fields[fieldName].value;
+          }
+        }
+
+        return validations;
+      },
+
+      removeField: function(fieldName) {
+        this.$validator.detach(fieldName);
+        this.$emit('remove-field', fieldName);
+      },
+
+      onSubmit: function() {
+        if (this.submitting) return;
+        
+        var self = this;
+
+        var validations = this.getValidations();
+        this.$validator.validateAll(validations).then(function() {
+          self.$emit('submit');
+        });
+      }
+    }
+  });
+</script>

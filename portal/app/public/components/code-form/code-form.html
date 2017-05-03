@@ -1,0 +1,71 @@
+<script type="x-template" id="code-form">
+  {% include 'components/code-form/code-form.template.html' %}
+</script>
+
+<script>
+  Vue.component('p-code-form', {
+    template: "#code-form",
+
+    data: function() {
+      return {
+        code: '',
+
+        initMessage: '// Click to edit',
+        submitting: false,
+        showEditor: false,
+        hasError: false
+      }
+    },
+
+    computed: {
+      isEditorActive: function() {
+        return jQuery(this.$refs.editor).is(':focus');
+      },
+
+      isShowingEditor: function() {
+        return this.isEditorActive || this.showEditor;
+      }
+    },
+
+    created: function() {
+      this.onFocusOutEditor();
+    },
+
+    methods: {
+      onClickCode: function() {
+        if (this.submitting) return;
+
+        if (this.code === this.initMessage) {
+          this.code = '';
+        }
+
+        this.showEditor = true;
+        
+        var editorEl = this.$refs.editor;
+        setTimeout(function() {
+          editorEl.focus();
+        }, 1);
+      },
+
+      onFocusOutEditor: function() {
+        this.showEditor = false;
+        if (this.code === '') {
+          this.code = this.initMessage;
+        }
+      },
+
+      onSubmit: function() {
+        this.hasError = this.code === '' || this.code === this.initMessage;
+        if (this.hasError) return;
+
+        var self = this;
+
+        this.submitting = true;
+        setTimeout(function() {
+          self.submitting = false;
+          self.$router.push('grade');
+        }, 1000);
+      }
+    }
+  });
+</script>

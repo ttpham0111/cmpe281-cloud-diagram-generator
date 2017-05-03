@@ -1,0 +1,54 @@
+{% raw %}
+<script type="x-template" id="field-form">
+  <div>
+    <form class="form-inline" @submit.prevent="onSubmit">
+      <span class="form-group" :class="{ 'has-danger': errors.has('data-type') }">
+        <select class="form-control form-control-sm mb-2 mr-sm-2 mb-sm-0" name="data-type"
+          v-model=selectedDatatype v-validate="'required|in:' + dataTypes.join(',')"
+          data-vv-as="type" data-vv-validate-on="none">
+          <option disabled value="">Select Type</option>
+          <option v-for="type in dataTypes">{{ type }}</option>
+        </select>
+      </span>
+
+      <span class="form-group" :class="{ 'has-danger': errors.has('field-name') }">
+        <input type="text" name="field-name" placeholder="Name"
+          v-model="fieldName" v-validate="'required'" data-vv-as="name"
+          data-vv-validate-on="none"
+          class="form-control form-control-sm mb-2 mr-sm-2 mb-sm-0 has-danger">
+      </span>
+
+      <button type="submit" class="btn btn-sm btn-primary">Add Field</button>
+
+    </form>
+    
+    <div v-show="errors.any()" class="text-danger">* {{ errors.all()[0] }}</div>
+  </div>
+</script>
+{% endraw %}
+
+<script>
+  Vue.component('p-field-form', {
+    template: "#field-form",
+
+    data: function() {
+      return {
+        fieldName: '',
+        dataTypes: ['Number', 'Letter', 'Short Text', 'Long Text'],
+        selectedDatatype: ''
+      };
+    },
+
+    methods: {
+      onSubmit: function() {
+        var self = this;
+        this.$validator.validateAll().then(function() {
+          self.$emit('submit', self.fieldName, self.selectedDatatype);
+          self.fieldName = '';
+          self.selectedDatatype = '';
+          self.errors.clear();
+        });
+      }
+    }
+  });
+</script>

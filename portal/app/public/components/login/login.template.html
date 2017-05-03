@@ -12,9 +12,9 @@
         <div class="form-group row" :class="{ 'has-danger': errors.has('user-id') }">
           <label class="col-sm-2 col-form-label">User&nbsp;Id</label>
           <div class="col-sm-9 offset-sm-1">
-            <input type="text" class="form-control" name="user-id"
+            <input type="text" class="form-control" name="user-id" autofocus
               :class="{ 'form-control-danger': errors.has('user-id') }"
-              v-model="userId" v-validate="'required|alpha_num'" data-vv-as="user id">
+              v-model="userId" v-validate="'required'" data-vv-as="user id">
           </div>
           <div v-show="errors.has('user-id')" class="form-control-feedback col-sm-10 offset-sm-3">
             {{ errors.first('user-id') }}

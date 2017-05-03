@@ -1,0 +1,22 @@
+<form @submit.prevent="onSubmit">
+  <div class="form-group" :class="{ 'has-danger': hasError }">
+    <label>Code</label>
+
+    <textarea id="editor" ref="editor" v-show="showEditor"
+      rows="24" class="form-control" autofocus
+      v-model="code" @focusout="onFocusOutEditor"></textarea>
+
+    <pre id="code" v-show="!showEditor" v-highlight="code" @click.prevent="onClickCode">
+      <code></code>
+    </pre>
+
+    <div v-show="hasError" class="form-control-feedback">* The code field is required</div>
+  </div>
+
+  <div class="text-right">
+    <button type="submit" class="btn btn-primary">
+      <p-loading-icon v-show="submitting"></p-loading-icon>
+      <span v-show="!submitting">Submit</span>
+    </button>
+  </div>
+</form>

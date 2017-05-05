@@ -8,7 +8,7 @@
 
     data: function() {
       return {
-        userId: '',
+        username: '',
         password: '',
         authError: '',
 
@@ -23,16 +23,16 @@
         var self = this;
         this.$validator.validateAll().then(function() {
           self.submitting = true;
-          self.login(self.userId, self.password).always(function() {
+          self.login(self.username, self.password).always(function() {
             self.submitting = false;
           });
         }).catch();
       },
 
-      login: function(userId, password) {
+      login: function(username, password) {
         var self = this;
 
-        return AuthService.login(userId, password,
+        return AuthService.login(username, password,
           function() {
             self.$router.push('home');
           },

@@ -1,22 +1,17 @@
 var AuthService = {
-  user: {
-    authenticated: false,
-    id: ''
-  },
+  user: null,
 
-  login: function(userId, password, success, error) {
-    var user = this.user;
-
+  login: function(username, password, success, error) {
+    var self = this;
     return jQuery.ajax({
       type: 'POST',
       url: '/api/login',
       contentType: 'application/json; charset=utf-8',
-      data: JSON.stringify({ user_id: userId, password: password }),
+      data: JSON.stringify({ username: username, password: password }),
 
-      success: function() {
-        user.authenticated = true;
-        user.id = userId;
-
+      success: function(user) {
+        self.user = user;
+        self.user.authenticated = true;
         success();
       },
 
@@ -29,17 +24,15 @@ var AuthService = {
   logout: function() {
     var self = this;
     return jQuery.post('/api/logout', function() {
-      self.user = {
-        authenticated: false
-      };
+      self.user = null;
     });
   },
 
   check: function() {
-    return this.user.authenticated;
+    return this.user && this.user.authenticated;
   },
 
-  getUserId: function() {
-    return this.user.id;
+  getUser: function() {
+    return this.user;
   }
 };

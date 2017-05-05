@@ -1,0 +1,318 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description": "AWS Cloudformation Template for Diagram Portal app with MySQL backend.",
+
+  "Parameters" : {
+    "ImageId": {
+      "Description": "AWS Image id",
+      "Default": "ami-7a85a01a",
+      "Type": "AWS::EC2::Image::Id"
+    },
+
+    "KeyName": {
+      "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+    },
+
+    "InstanceType" : {
+      "Description" : "WebServer EC2 instance type",
+      "Type" : "String",
+      "Default" : "t2.micro",
+      "AllowedValues" : [ "t1.micro", "t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "g2.2xlarge", "g2.8xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "d2.xlarge", "d2.2xlarge", "d2.4xlarge", "d2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge"],
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+
+    "SSHLocation" : {
+      "Description" : "The IP address range that can be used to SSH to the EC2 instances",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    },
+
+    "RdsDbInstanceType": {
+      "Description": "RDS DB Instance Type",
+      "Type" : "String",
+      "Default" : "db.t2.micro",
+      "AllowedValues": ["db.t1.micro", "db.m1.small", "db.m1.medium", "db.m1.large", "db.m1.xlarge", "db.m2.xlarge", "db.m2.2xlarge", "db.m2.4xlarge", "db.m3.medium", "db.m3.large", "db.m3.xlarge", "db.m3.2xlarge", "db.m4.large", "db.m4.xlarge", "db.m4.2xlarge", "db.m4.4xlarge", "db.m4.10xlarge", "db.r3.large", "db.r3.xlarge", "db.r3.2xlarge", "db.r3.4xlarge", "db.r3.8xlarge", "db.t2.micro", "db.t2.small", "db.t2.medium", "db.t2.large"],
+      "ConstraintDescription": "must be a valid RDS instance type."
+    },
+
+    "RdsDBName": {
+      "Description": "Name of database to be created on startup",
+      "Type": "String",
+      "Default": "cmpe281"
+    },
+
+    "RdsAllocatedStorage": {
+      "Description": "RDS DB Allocated Storage",
+      "Type": "String",
+      "Default": "5"
+    },
+
+    "RdsEngine": {
+      "Description": "RDS DB Engine",
+      "Type": "String",
+      "Default": "mysql"
+    },
+
+    "RdsUser": {
+      "Description": "Specify an alphanumeric string that defines the login ID for the master user. You use the master user login to start defining all users, objects, and permissions in the databases of your DB instance. Master Username must start with a letter, as in \"awsuser\".",
+      "Type": "String",
+      "Default": "root"
+    },
+
+    "RdsPassword": {
+      "Description": "Database user password",
+      "Type": "String",
+      "NoEcho": true
+    },
+
+    "DockerImage": {
+      "Description": "DockerHub Image",
+      "Type": "String",
+      "Default": "ttpham0111/diagram-portal"
+    }
+  },
+
+  "Resources": {
+    "RDSDbInstace": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": {"Ref": "RdsAllocatedStorage"},
+        "DBInstanceClass": {"Ref": "RdsDbInstanceType"},
+        "Engine": {"Ref": "RdsEngine"},
+        "MasterUsername": {"Ref": "RdsUser"},
+        "MasterUserPassword": {"Ref": "RdsPassword"},
+        "DBSecurityGroups"  : [ { "Ref" : "DBSecurityGroup" } ]
+      }
+    },
+
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": {"Ref" : "InstanceType"},
+        "SecurityGroups": [{"Ref": "InstanceSecurityGroup"}],
+        "KeyName": {"Ref": "KeyName"},
+        "ImageId": {"Ref": "ImageId"},
+        "UserData"       : { "Fn::Base64" : { "Fn::Join" : ["", [
+             "#!/bin/bash -xe\n",
+             "yum update aws-cfn-bootstrap\n",
+
+             "# Install the files and packages from the metadata\n",
+             "/opt/aws/bin/cfn-init ",
+             "         --stack ", { "Ref" : "AWS::StackName" },
+             "         --resource EC2Instance ",
+             "         --configsets Install ",
+             "         --region ", { "Ref" : "AWS::Region" }, "\n",
+
+             "# Signal the status from cfn-init\n",
+             "/opt/aws/bin/cfn-signal -e $? ",
+             "         --stack ", { "Ref" : "AWS::StackName" },
+             "         --resource EC2Instance ",
+             "         --region ", { "Ref" : "AWS::Region" }, "\n"
+        ]]}}
+      },
+
+      "CreationPolicy" : {
+        "ResourceSignal" : {
+          "Timeout" : "PT5M"
+        }
+      },
+
+      "Metadata" : {
+        "Comment1" : "Configure the bootstrap helpers to install Docker and Start API.",
+
+        "AWS::CloudFormation::Init" : {
+          "configSets": {
+            "Install": ["mysql", "docker", "app", "populate_db"]
+          },
+          "mysql": {
+            "packages": {
+              "yum": {
+                "mysql": []
+              }
+            },
+            "files": {
+              "/etc/initdb.d/tables.sql": {
+                "content": {"Fn::Join": ["", [
+                  "CREATE TABLE IF NOT EXISTS users (", "\n",
+                  "  id       INT(11)      NOT NULL AUTO_INCREMENT,", "\n",
+                  "  username VARCHAR(255) NOT NULL,", "\n",
+                  "  password VARCHAR(255) NOT NULL,", "\n",
+                  "  url      VARCHAR(255) NOT NULL,", "\n",
+                  "  mode     VARCHAR(10)  NOT NULL,", "\n",
+                  "", "\n",
+                  "  PRIMARY KEY (id),", "\n",
+                  "  UNIQUE KEY username (username)", "\n",
+                  ");", "\n",
+                  "", "\n",
+                  "CREATE TABLE IF NOT EXISTS fields (", "\n",
+                  "  id      INT(11)     NOT NULL AUTO_INCREMENT,", "\n",
+                  "  user_id INT(11)     NOT NULL,", "\n",
+                  "  name    VARCHAR(80) NOT NULL,", "\n",
+                  "  type    VARCHAR(80) NOT NULL,", "\n",
+                  "  value   VARCHAR(80) NOT NULL,", "\n",
+                  "", "\n",
+                  "  PRIMARY KEY (id),", "\n",
+                  "  FOREIGN KEY (user_id) REFERENCES users(id)", "\n",
+                  ");", "\n"
+                ]]},
+                "mode": "000640",
+                "owner": "root",
+                "group": "root"
+              }
+            }
+          },
+
+          "docker": {
+            "packages" : {
+              "yum" : {
+                "docker": []
+              }
+            },
+            "services": {
+              "sysvinit": {  
+                "docker": {
+                  "enabled": true,
+                  "ensureRunning": true
+                }
+              }
+            }
+          },
+          "app": {
+            "files" : {
+              "/etc/init.d/diagram_portal": {
+                "content" : {"Fn::Join": ["", [
+                  "#!/bin/bash", "\n",
+                  "# chkconfig: 2345 20 80", "\n",
+                  "", "\n",
+                  "# Source function library.", "\n",
+                  ". /etc/init.d/functions", "\n",
+                  "\n",
+                  "start() {", "\n",
+                  "    SECRET_KEY=`head -c 500 /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | fold -w 24 | head -n1`", "\n",
+                  "    docker rm -f diagram_portal", "\n",
+                  "    docker pull ", {"Ref": "DockerImage"}, "\n",
+                  "    docker run --name diagram_portal",
+                  "               -p 80:5000",
+                  "               -d",
+                  "               -e DATABASE_URL=\"mysql+pymysql://", {"Ref": "RdsUser"}, ":", {"Ref": "RdsPassword"}, "@", {"Fn::GetAtt": ["RDSDbInstace", "Endpoint.Address"]}, ":", {"Fn::GetAtt": ["RDSDbInstace", "Endpoint.Port"]}, "/", {"Ref": "RdsDBName"}, "\"",
+                  "               -e SECRET_KEY=$SECRET_KEY",
+                  "            ", {"Ref": "DockerImage"}, "\n",
+                  "}", "\n",
+                  "\n",
+                  "stop() {", "\n",
+                  "    docker rm -f diagram_portal ", "\n",
+                  "}", "\n",
+                  "\n",
+                  "case \"$1\" in ", "\n",
+                  "    start)", "\n",
+                  "       start", "\n",
+                  "       ;;", "\n",
+                  "    stop)", "\n",
+                  "       stop", "\n",
+                  "       ;;", "\n",
+                  "    restart)", "\n",
+                  "       stop", "\n",
+                  "       start", "\n",
+                  "       ;;", "\n",
+                  "    *)", "\n",
+                  "       echo \"Usage: $0 {start|stop|restart}\"", "\n",
+                  "esac", "\n",
+                  "\n",
+                  "exit 0", "\n",
+                  "\n"
+                ]]},
+                "mode"  : "000751",
+                "owner" : "root",
+                "group" : "root"
+              }
+            },
+            "services": {
+              "sysvinit": {  
+                "diagram_portal": {
+                  "enabled": true,
+                  "ensureRunning": true,
+                  "files": ["/etc/init.d/diagram_portal"]
+                }
+              }
+            }
+          },
+          "populate_db": {
+            "commands": {
+              "01_create_tables": {
+                "command": {"Fn::Join": ["", ["mysql -h ", {"Fn::GetAtt": ["RDSDbInstace", "Endpoint.Address"]}, " -u", {"Ref": "RdsUser"}, " -p", {"Ref": "RdsPassword"}, " ", {"Ref": "RdsDBName"}, " < /etc/initdb.d/tables.sql"]]},
+                "test" : "test -e /etc/initdb.d/tables.sql",
+              }
+            }
+          }
+        }
+      }
+    },
+    "InstanceSecurityGroup" : {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable SSH access via port 22. Open HTTP/s on all.",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {"Ref": "SSHLocation"}
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "443",
+            "ToPort": "443",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "DBSecurityGroup": {
+      "Type": "AWS::RDS::DBSecurityGroup",
+      "Properties": {
+        "DBSecurityGroupIngress": { "EC2SecurityGroupName": { "Ref": "InstanceSecurityGroup" } },
+        "GroupDescription"      : "Portal Access"
+      }
+    }
+  },
+
+  "Outputs": {
+    "InstanceId" : {
+      "Description" : "InstanceId of the newly created EC2 instance",
+      "Value" : { "Ref" : "EC2Instance" }
+    },
+    "AZ" : {
+      "Description" : "Availability Zone of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "AvailabilityZone" ] }
+    },
+    "DBHost": {
+      "Description": "RDS Database Host URL",
+      "Value": {"Fn::GetAtt": ["RDSDbInstace", "Endpoint.Address"]}
+    },
+    "DBPort": {
+      "Description": "RDS Database Port",
+      "Value": {"Fn::GetAtt": ["RDSDbInstace", "Endpoint.Port"]}
+    },
+    "PublicDNS" : {
+      "Description" : "Public DNSName of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicDnsName" ] }
+    },
+    "PublicIP" : {
+      "Description" : "Public IP address of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicIp" ] }
+    }
+  }
+}

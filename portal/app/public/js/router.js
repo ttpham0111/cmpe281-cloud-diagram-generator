@@ -19,22 +19,32 @@ router = new VueRouter({
       redirect: '/home'
     },
     {
+      name: 'login',
       path: '/login',
       component: Vue.component('p-login'),
       beforeEnter: checkAuth
     },
     {
+      name: 'home',
       path: '/home',
       component: Vue.component('p-home'),
       beforeEnter: checkAuth,
       children: [
         {
-          path: '',
+          name: 'code',
+          path: '/code',
           component: Vue.component('p-code-form')
         },
         {
+          name: 'file',
+          path: '/file',
+          component: Vue.component('p-file-form')
+        },
+        {
+          name: 'grade',
           path: '/grade',
-          component: Vue.component('p-grade')
+          component: Vue.component('p-grade'),
+          props: true
         }
       ]
     },

@@ -1,1 +1,2 @@
-recursive-include app/public * 
+recursive-include app/public *
+recursive-include app/api/static *

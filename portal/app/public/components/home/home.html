@@ -7,9 +7,21 @@
     template: "#home",
 
     computed: {
-      userId: function() {
-        return AuthService.getUserId();
+      user: function() {
+        return AuthService.getUser();
+      },
+    },
+
+    watch: {
+      '$route': function(to) {
+        if (to.name == 'home') {
+          this.redirect();
+        }
       }
+    },
+
+    mounted: function() {
+      this.redirect();
     },
 
     methods: {
@@ -18,6 +30,13 @@
         AuthService.logout().done(function() {
           self.$router.push('login');
         });
+      },
+
+      redirect: function() {
+        switch (this.user.mode) {
+          case 'code': this.$router.push('code'); break;
+          case 'file': this.$router.push('file'); break; 
+        }
       }
     }
   });

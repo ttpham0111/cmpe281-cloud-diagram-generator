@@ -6,18 +6,23 @@
   Vue.component('p-grade', {
     template: "#grade",
 
+    props: {
+      diagramUrl: String
+    },
+
     data: function() {
       return {
-        fields: {
-          test: {
-            name: 'test', value: 'value', type: 'Number'
-          }
-        },
+        fields: {},
+        message: '',
+        messageClass: '',
 
         showAddFieldForm: false,
-        showSuccessMessage: false,
         submitting: false
       };
+    },
+
+    created: function() {
+      this.getGrades();
     },
 
     computed: {
@@ -32,6 +37,18 @@
     },
 
     methods: {
+      getGrades: function() {
+        var self = this;
+        var $set = this.$set;
+        jQuery.get('/api/grades', function(grades) {
+          grade.new = false;
+
+          grades.forEach(function(grade) {
+            $set(self.fields, grade.name, grade);
+          });
+        });
+      },
+
       toggleAddFieldForm: function() {
         var inv = !this.showAddFieldForm;
         this.showAddFieldForm = inv;
@@ -59,6 +76,7 @@
         field.name = fieldName;
         field.type = dataType;
         field.value = '';
+        field.new = true;
 
         if (!fields.hasOwnProperty(fieldName)) {
           this.$set(fields, fieldName, field);
@@ -66,21 +84,49 @@
       },
 
       removeField: function(fieldName) {
-        this.$delete(this.fields, fieldName);
+        var field = this.fields[fieldName] || {};
+
+        if (field.new) {
+          this.$delete(this.fields, fieldName);
+          return;
+        }
+
+        var self = this;
+        jQuery.ajax({
+          type: 'DELETE',
+          url: '/api/grades/' + fieldName,
+          success: function() {
+            self.$delete(self.fields, fieldName);
+          }
+        });
       },
 
       onSubmit: function() {
         var self = this;
 
         this.submitting = true;
-        setTimeout(function() {
-          self.submitting = false;
-          self.showSuccessMessage = true;
+        jQuery.ajax({
+          type: 'POST',
+          url: '/api/grades/create',
+          contentType: 'application/json; charset=utf-8',
+          data: JSON.stringify({ fields: self.fields }),
 
-          setTimeout(function() {
-            self.$router.push('home');
-          }, 3000);
-        }, 1000);
+          success: function() {
+            self.submitting = false;
+            self.messageClass = 'text-success';
+            self.message = '> Successfully graded! Redirecting to submission page...';
+
+            setTimeout(function() {
+              self.$router.push('home');
+            }, 3000);
+          },
+
+          error: function(error) {
+            self.submitting = false;
+            self.messageClass = 'text-danger';
+            self.message = error.responseJSON.error;
+          }
+        });
       }
     }
   });

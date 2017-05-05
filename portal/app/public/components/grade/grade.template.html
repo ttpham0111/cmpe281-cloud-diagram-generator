@@ -2,10 +2,8 @@
 <div>
   <div class="container">
     <div class="row mb-3">
-      <a href="http://agilemodeling.com/images/models/sequenceDiagramTranscripts.jpg" data-lightbox="diagram">
-        <img
-          src="http://agilemodeling.com/images/models/sequenceDiagramTranscripts.jpg"
-          class="img-fluid img-thumbnail rounded mx-auto d-block">
+      <a class="mx-auto d-block" :href="diagramUrl" data-lightbox="diagram">
+        <img :src="diagramUrl" class="img-fluid img-thumbnail rounded mx-auto d-block">
       </a>
     </div>
 
@@ -30,8 +28,8 @@
       <p-grade-form v-if="hasFields" @submit="onSubmit"
         :fields="fields" :submitting="submitting" @remove-field="removeField"></p-grade-form>
     
-      <div v-if="true" class="text-success mt-3">
-        > Successfully graded! Redirecting to submission page...
+      <div v-if="message" class="text-success mt-3" :class="messageClass">
+        {{ message }}
       </div>
     </form>
   </div>

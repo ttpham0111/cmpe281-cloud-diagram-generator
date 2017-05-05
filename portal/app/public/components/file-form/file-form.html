@@ -1,0 +1,50 @@
+<script type="x-template" id="file-form">
+  {% include 'components/file-form/file-form.template.html' %}
+</script>
+
+<script>
+  Vue.component('p-file-form', {
+    template: "#file-form",
+
+    data: function() {
+      return {
+        file: null,
+
+        submitting: false
+      };
+    },
+
+    methods: {
+      onFileChange: function(e) {
+        var files = e.target.files || e.dataTransfer.files;
+        if (!files.length) return;
+
+        this.file = files[0];
+      },
+
+      onSubmit: function() {
+        if (this.errors.has('file')) return;
+        
+        var self = this;
+        
+        var data = new FormData();
+        data.append('file', self.file);
+        
+        self.submitting = true;
+        jQuery.ajax({
+          type: 'POST',
+          url: '/api/diagrams/create',
+          data: data,
+          cache: false,
+          contentType: false,
+          processData: false,
+
+          success: function(res) {
+            self.submitting = false;
+            self.$router.push({ name: 'grade', params: { diagramUrl: res.url } });
+          }
+        });
+      }
+    }
+  });
+</script>

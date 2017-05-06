@@ -6,7 +6,7 @@
   "Parameters" : {
     "ImageId": {
       "Description": "AWS Image id",
-      "Default": "ami-7a85a01a",
+      "Default": "ami-4836a428",
       "Type": "AWS::EC2::Image::Id"
     },
 

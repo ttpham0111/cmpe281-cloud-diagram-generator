@@ -337,10 +337,15 @@
       "Properties" : {
         "AvailabilityZones" : { "Fn::GetAZs" : "" },
         "CrossZone" : "true",
+        "AppCookieStickinessPolicy": [{
+          "PolicyName" : "PortalAppCookieStickinessPolicy",
+          "CookieName" : "session"
+        }],
         "Listeners" : [{
           "LoadBalancerPort" : "80",
           "InstancePort" : "80",
-          "Protocol" : "TCP"
+          "Protocol" : "HTTP",
+          "PolicyNames" : [ "PortalAppCookieStickinessPolicy" ]
         }]
       }
     },

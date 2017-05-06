@@ -12,8 +12,9 @@ RUN apk add --no-cache curl \
     python get-pip.py && \
     rm -f get-pip.py
 
-# Install gunicorn
-RUN pip install gunicorn
+# Install gunicorn and gevent
+RUN pip install gunicorn \
+                gevent==1.2.1
 
 # Install requires first for better caching
 COPY requirements.txt /app/requirements.txt
@@ -28,4 +29,5 @@ CMD gunicorn --bind=0.0.0.0:5000 \
              --access-logfile=- \
              --access-logformat="%(t)s %(r)s %(s)s" \
              --workers=1 \
+             --worker-class='gevent' \
              run_server:app

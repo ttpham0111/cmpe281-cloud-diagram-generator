@@ -45,7 +45,12 @@
       "Type": "String"
     },
 
-    "OutputExtension": {
+    "AppInputExtension": {
+      "Description": "The input extension of the diagram",
+      "Type": "String"
+    },
+
+    "AppOutputExtension": {
       "Description": "The output extension of the diagram",
       "Type": "String"
     },
@@ -129,8 +134,11 @@
                   "    docker run --name diagram_backend",
                   "               -p 80:5000",
                   "               -d",
+                  "               -e TEMP_DIR=/tmp",
                   "               -e CREATE_DIAGRAM_COMMAND=\"", {"Ref": "AppCreateDiagramCommand"}, "\"",
                   "               -e MODE=", {"Ref": "AppMode"},
+                  "               -e INPUT_EXT=", {"Ref": "AppInputExtension"},
+                  "               -e OUTPUT_EXT=", {"Ref": "AppOutputExtension"},
                   "               -e SECRET_KEY=$SECRET_KEY",
                   "            ", {"Ref": "DockerImage"}, "\n",
                   "}", "\n",

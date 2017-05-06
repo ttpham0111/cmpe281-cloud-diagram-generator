@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:alpine
 
 MAINTAINER Tuan Pham <ttpham0111@gmail.com>
 
@@ -20,13 +20,6 @@ RUN apk add --no-cache wget \
     wget "https://bootstrap.pypa.io/get-pip.py" && \
     python get-pip.py && \
     rm -f get-pip.py
-
-RUN wget -O- http://www.spinellis.gr/umlgraph/UMLGraph-5.7_2.23-SNAPSHOT.tar.gz | tar -xz -C /tmp && \
-    find /tmp/UMLGraph-5.7_2.23-SNAPSHOT/lib/ && \
-    mkdir -p /app/app/resources && \
-    mv /tmp/UMLGraph-5.7_2.23-SNAPSHOT/lib/UmlGraph.jar /app/app/resources && \
-    mv /tmp/UMLGraph-5.7_2.23-SNAPSHOT/bin/umlgraph /app/app/resources && \
-    rm -rf /tmp/UMLGraph-5.7_2.23-SNAPSHOT
 
 RUN wget -O- https://mirrors.kernel.org/gnu/plotutils/plotutils-2.6.tar.gz | tar -xz -C /tmp && \
     cd /tmp/plotutils-2.6 && \

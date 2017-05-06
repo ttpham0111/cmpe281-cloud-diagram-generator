@@ -60,11 +60,17 @@
 
         var self = this;
 
-        this.submitting = true;
-        setTimeout(function() {
-          self.submitting = false;
-          self.$router.push('grade');
-        }, 1000);
+        jQuery.ajax({
+          type: 'POST',
+          url: '/api/diagrams/create',
+          contentType: 'application/json; charset=utf-8',
+          data: JSON.stringify({ data: this.code }),
+
+          success: function(res) {
+            self.submitting = false;
+            self.$router.push({ name: 'grade', params: { diagramUrl: res.url } });
+          }
+        });
       }
     }
   });

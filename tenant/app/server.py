@@ -21,8 +21,9 @@ def status():
 
 @app.route('/diagrams/create', methods=['POST'])
 def create_diagram():
+    mode = os.environ['MODE']
     try:
-        if os.environ['MODE'] == 'file':
+        if mode == 'file':
             data = get_file_from_request(request)
         else:
             data = request.json['data']
@@ -40,26 +41,32 @@ def create_diagram():
     except subprocess.CalledProcessError as e:
         return jsonify(error=e.output), 500
 
-    finally:
-        shutil.rmtree(work_dir)
+    # finally:
+    #     shutil.rmtree(work_dir)
 
     diagram_filename = os.path.basename(output_filepath)
     return jsonify(data=diagram, filename=diagram_filename), 200
 
 
 def _create_diagram(data, work_dir, output_filename):
-    _data, filename = get_data_from_file(data) if 'filename' in data else (data, None)
+    _data, filename = get_data_from_file(data) if 'filename' in data else (data, '')
 
-    tmp_file = NamedTemporaryFile(dir=work_dir)
+    tmp_file = NamedTemporaryFile(dir=work_dir, suffix=os.environ['INPUT_EXT'])
     tmp_file.write(_data)
+    tmp_file.seek(0)
     input_path = tmp_file.name
 
-    root, ext = os.path.splitext(filename)
+    with open('test', 'w') as f, open(tmp_file.name) as fin:
+        f.write(fin.read())
+        fin.seek(0)
+
+    ext = os.path.splitext(filename)[1]
     if ext == '.zip':
         unzip(input_path, work_dir)
         input_path = work_dir
 
     cmd = os.environ['CREATE_DIAGRAM_COMMAND'].format(input_path).split()
+    print cmd
     subprocess.check_output(cmd)
 
     output_filename = output_filename + os.environ['OUTPUT_EXT']
@@ -67,8 +74,10 @@ def _create_diagram(data, work_dir, output_filename):
 
     if ext == '.zip':
         diagram_path = os.path.join(input_path, 'pic' + os.environ['OUTPUT_EXT'])
-        os.rename(diagram_path, output_path)
+    else:
+        diagram_path = input_path + os.environ['OUTPUT_EXT']
 
+    os.rename(diagram_path, output_path)
     return output_path
 
 

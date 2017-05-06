@@ -19,3 +19,6 @@ CREATE TABLE IF NOT EXISTS fields (
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+INSERT INTO users (username, password, url, mode)
+  VALUES ('tenant_1', '$2y$10$P/wSK1/DfmcU0zGYngMY2uJwYEStxnED1LR5Zw7x45nRcIArfQ4OO', 'http://backend:5000', 'code')
